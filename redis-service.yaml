@@ -1,17 +1,16 @@
 # ============================================================
 #  REDIS SERVICE
-#  Type ClusterIP = only accessible inside the cluster (not from browser)
-#  The voting-app and worker use this service name to talk to Redis
+#  ClusterIP = only accessible inside the cluster (not browser)
+#  Name "redis" is used by voting-app and worker to connect
 # ============================================================
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service         # This name is used in voting-app-pod.yaml (REDIS_HOST)
+  name: redis
 spec:
-  type: ClusterIP             # ClusterIP = internal only, not exposed to browser
+  type: ClusterIP
   selector:
-    app: redis                # Connect to the Pod that has label "app: redis"
+    app: redis
   ports:
     - port: 6379
       targetPort: 6379

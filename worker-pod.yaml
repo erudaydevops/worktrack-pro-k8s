@@ -1,10 +1,9 @@
 # ============================================================
 #  WORKER POD
-#  The Worker is a background service (no UI, no browser access)
-#  Job: Read votes from Redis → Save them to PostgreSQL
-#  No Service needed because nothing connects TO the worker
+#  Background service - no UI, no browser access needed
+#  Job: Read votes from Redis -> Save them to PostgreSQL
+#  Connects to "redis" service and "db" service by name
 # ============================================================
-
 apiVersion: v1
 kind: Pod
 metadata:
@@ -13,10 +12,5 @@ metadata:
     app: worker
 spec:
   containers:
-    - name: worker-container
-      image: kodekloud/examplevotingapp_worker   # Ready-made image from Docker Hub
-      env:
-        - name: REDIS_HOST        # Where is Redis? Use the Service name
-          value: "redis-service"  # Must match the name in redis-service.yaml
-        - name: POSTGRES_HOST     # Where is PostgreSQL? Use the Service name
-          value: "db"             # Must match the name in postgres-service.yaml
+    - name: worker
+      image: dockersamples/examplevotingapp_worker

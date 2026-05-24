@@ -1,17 +1,16 @@
 # ============================================================
 #  POSTGRES SERVICE
-#  Type ClusterIP = internal only (not exposed to browser)
-#  The Worker and Result-App use the name "db" to connect here
+#  ClusterIP = internal only
+#  Name "db" is used by worker and result-app to connect
 # ============================================================
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: db                    # This name is used in worker-pod.yaml (POSTGRES_HOST)
+  name: db
 spec:
-  type: ClusterIP             # Internal only
+  type: ClusterIP
   selector:
-    app: postgres             # Connect to the Pod that has label "app: postgres"
+    app: postgres
   ports:
     - port: 5432
       targetPort: 5432
