@@ -130,11 +130,18 @@ kubectl get all -n worktrack
 
 ### Step 3 — Access the App
 
-```bash
-kubectl port-forward -n worktrack service/frontend-service 3000:80
-```
+You can access the application in two ways:
 
-Open → **http://localhost:3000**
+#### Option A: Direct NodePort Access (No setup needed)
+Since the frontend service is exposed via NodePort `30080`, you can open it directly:
+👉 **[http://localhost:30080](http://localhost:30080)**
+
+#### Option B: Using Launcher Script (Port 3000)
+Run the automated launcher script to set up port forwards and open the app on port 3000:
+```powershell
+.\start.ps1
+```
+Open → **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
