@@ -11,6 +11,21 @@
 
 ---
 
+## What is WorkTrack Pro?
+
+**WorkTrack Pro** is a modern, responsive Employee Task Management Dashboard designed for enterprise teams to track productivity, task progress, and workload distribution in real-time. It provides a visual dashboard for managers to monitor team bandwidth, assign/edit tasks, and analyze task completion rates across the organization.
+
+### 🏢 Real-World Business Scenario
+
+Imagine a software engineering company, **TechCorp**, with a fast-growing team of developers and multiple active projects:
+
+1. **Identifying Overload:** An Engineering Manager logs into **WorkTrack Pro** and reviews the **Employees** tab. They see that *Alice* is assigned 8 tasks (with a 25% completion rate), while *Bob* has only 1 task assigned.
+2. **Rebalancing the Workload:** The Manager switches to the **Tasks** tab, filters tasks by *Alice*, finds a high-priority "Database Schema Migration" task, and edits it to reassign it to *Bob* with an updated due date.
+3. **Real-Time Data Persistence:** The React frontend securely sends this change to the Node.js API backend. The backend updates PostgreSQL, invalidates the old cached statistics in Redis, and immediately broadcasts the updated data.
+4. **Instantly Updated Metrics:** The Manager returns to the **Dashboard** and sees the overall completion rate and employee workload metrics recalculate instantly, ensuring data consistency across the team.
+
+---
+
 ## Architecture
 
 ```
