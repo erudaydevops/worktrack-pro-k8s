@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: erudaydevops/worktrack-backend:latest
+          image: uday188/worktrack-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: erudaydevops/worktrack-frontend:latest
+          image: uday188/worktrack-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
