@@ -176,6 +176,36 @@ Open → **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
+## 🔄 GitOps Continuous Delivery with ArgoCD
+
+This project is fully ready for **GitOps CD** using **ArgoCD**. 
+
+An ArgoCD Application manifest is provided in [argocd/application.yaml](./argocd/application.yaml). It connects the cluster directly to this GitHub repository. Any changes pushed to the `k8s/` folder in Git will be automatically reconciled and deployed to your cluster, ensuring zero configuration drift.
+
+### Setup Steps:
+
+1. **Install ArgoCD on your cluster:**
+   ```bash
+   kubectl create namespace argocd
+   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+   ```
+
+2. **Apply the ArgoCD Application:**
+   ```bash
+   kubectl apply -f argocd/application.yaml
+   ```
+
+3. **Access ArgoCD Dashboard:**
+   ```bash
+   kubectl port-forward -n argocd svc/argocd-server 8080:443
+   ```
+   * Open **[https://localhost:8080](https://localhost:8080)** in your browser.
+   * **Username:** `admin`
+   * **Password command:** 
+     `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"` (decode base64 to read).
+
+---
+
 ## API Endpoints
 
 | Method | Endpoint | Description |

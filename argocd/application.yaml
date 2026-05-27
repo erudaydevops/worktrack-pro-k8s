@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: worktrack-pro
+  namespace: argocd
+  labels:
+    app: worktrack-pro
+spec:
+  project: default
+  source:
+    # Points to your GitHub repository
+    repoURL: 'https://github.com/erudaydevops/worktrack-pro-k8s.git'
+    targetRevision: HEAD
+    path: k8s                 # Path to Kubernetes manifests in the repo
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: worktrack      # Deploys application in the worktrack namespace
+  syncPolicy:
+    automated:
+      prune: true             # Automatically delete resources removed from git
+      selfHeal: true          # Automatically fix drift in cluster state
+    syncOptions:
+      - CreateNamespace=true  # Create worktrack namespace if it doesn't exist
