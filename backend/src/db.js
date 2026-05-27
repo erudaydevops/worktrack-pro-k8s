@@ -40,7 +40,7 @@ async function initDB() {
       INSERT INTO employees (name, email, role, avatar) VALUES
         ('Rahul Sharma',  'rahul@worktrack.io',  'Backend Developer',   '👨‍💻'),
         ('Priya Patel',   'priya@worktrack.io',  'Frontend Developer',  '👩‍💻'),
-        ('Amit Kumar',    'amit@worktrack.io',   'DevOps Engineer',     '🧑‍🔧'),
+        ('Uday Patil',     'uday@worktrack.io',   'DevOps Engineer',     '🧑‍🔧'),
         ('Sneha Reddy',   'sneha@worktrack.io',  'UI/UX Designer',      '👩‍🎨'),
         ('Vikram Singh',  'vikram@worktrack.io', 'Product Manager',     '👨‍💼');
     `);
@@ -51,15 +51,15 @@ async function initDB() {
         t.title, t.description, t.status, t.priority,
         (SELECT id FROM employees WHERE email = t.email), t.due_date
       FROM (VALUES
-        ('Setup Kubernetes Cluster',    'Deploy production K8s cluster on AWS EKS',        'completed',  'high',   'amit@worktrack.io',   '2024-12-01'),
+        ('Setup Kubernetes Cluster',    'Deploy production K8s cluster on AWS EKS',        'completed',  'high',   'uday@worktrack.io',   '2024-12-01'),
         ('Build REST API',              'Create Node.js Express API with PostgreSQL',       'in-progress','high',   'rahul@worktrack.io',  '2024-12-15'),
         ('Design Dashboard UI',         'Create responsive React dashboard with charts',   'in-progress','medium', 'priya@worktrack.io',  '2024-12-20'),
         ('Write Unit Tests',            'Add Jest tests for all API endpoints',             'pending',    'medium', 'rahul@worktrack.io',  '2024-12-25'),
-        ('Configure CI/CD Pipeline',    'Setup GitHub Actions for auto deployment',         'pending',    'high',   'amit@worktrack.io',   '2024-12-18'),
+        ('Configure CI/CD Pipeline',    'Setup GitHub Actions for auto deployment',         'pending',    'high',   'uday@worktrack.io',   '2024-12-18'),
         ('Create Wireframes',           'Design wireframes for mobile app screens',         'completed',  'low',    'sneha@worktrack.io',  '2024-11-30'),
         ('Define Product Roadmap',      'Plan Q1 2025 feature releases',                   'in-progress','high',   'vikram@worktrack.io', '2024-12-10'),
         ('Implement Redis Caching',     'Add Redis cache layer for API responses',          'pending',    'medium', 'rahul@worktrack.io',  '2024-12-28'),
-        ('Setup Monitoring',            'Configure Prometheus and Grafana dashboards',      'pending',    'high',   'amit@worktrack.io',   '2024-12-22'),
+        ('Setup Monitoring',            'Configure Prometheus and Grafana dashboards',      'pending',    'high',   'uday@worktrack.io',   '2024-12-22'),
         ('Code Review Process',         'Establish PR review guidelines and checklist',     'completed',  'low',    'vikram@worktrack.io', '2024-11-25')
       ) AS t(title, description, status, priority, email, due_date);
     `);
