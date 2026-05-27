@@ -26,6 +26,22 @@ Imagine a software engineering company, **TechCorp**, with a fast-growing team o
 
 ---
 
+## 📸 Project Screenshots
+
+### 📊 Application Dashboard
+![WorkTrack Pro Dashboard](./screenshot-dashboard.png)
+
+### 👥 Team Management & Bandwidth Overview
+![WorkTrack Pro Employees](./screenshot-employees.png)
+
+### ✅ Task CRUD Board & Status Filters
+![WorkTrack Pro Tasks](./screenshot-tasks.png)
+
+### ☸️ Kubernetes Cluster Resources & Deployments (CLI)
+![Kubernetes CLI status](./screenshot-k8s-cli.png)
+
+---
+
 ## Architecture
 
 ```
