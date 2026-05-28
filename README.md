@@ -30,53 +30,71 @@ This project demonstrates a complete **end-to-end DevOps workflow**:
 ## 🏗️ Architecture Overview
 
 ```mermaid
-flowchart TD
-    DEV(["👨‍💻 Developer\n(Local Machine)"])
-    GH(["🐙 GitHub\nRepository"])
-    GA(["⚙️ GitHub Actions\nCI Pipeline"])
-    DH(["🐳 Docker Hub\nuday188/worktrack-*"])
-    ARGO(["🔄 ArgoCD\nGitOps Controller"])
+flowchart LR
+    %% Nodes & Styling Classes
+    classDef dev fill:#1e1b4b,stroke:#8B5CF6,stroke-width:2px,color:#fff;
+    classDef git fill:#0f172a,stroke:#94a3b8,stroke-width:2px,color:#fff;
+    classDef ci fill:#172554,stroke:#3B82F6,stroke-width:2px,color:#fff;
+    classDef registry fill:#0c4a6e,stroke:#0EA5E9,stroke-width:2px,color:#fff;
+    classDef gitops fill:#3c1510,stroke:#EA580C,stroke-width:2px,color:#fff;
+    
+    classDef gke fill:#020617,stroke:#4285F4,stroke-width:3px,color:#fff;
+    classDef ns fill:#0f172a,stroke:#326CE5,stroke-width:2px,color:#fff;
+    
+    classDef lb fill:#1e1b4b,stroke:#D97706,stroke-width:2px,color:#fff;
+    classDef react fill:#0f172a,stroke:#06B6D4,stroke-width:2px,color:#fff;
+    classDef node fill:#0f172a,stroke:#10B981,stroke-width:2px,color:#fff;
+    classDef db fill:#0f172a,stroke:#6366F1,stroke-width:2px,color:#fff;
+    classDef cache fill:#0f172a,stroke:#EF4444,stroke-width:2px,color:#fff;
+    
+    classDef user fill:#1e1b4b,stroke:#EC4899,stroke-width:2px,color:#fff;
 
-    subgraph GKE ["☁️ Google Kubernetes Engine — worktrack-cluster (us-central1-a)"]
+    %% Pipeline Section
+    subgraph Pipeline ["⚙️ CI/CD GitOps Automation Pipeline"]
+        direction LR
+        Dev(["👨‍💻 Developer"]):::dev
+        GitHub["🐙 GitHub Repo"]:::git
+        GHA["⚙️ GitHub Actions<br>(CI Engine)"]:::ci
+        DockerHub["🐳 Docker Hub<br>(Image Registry)"]:::registry
+        ArgoCD{{"🔄 ArgoCD<br>(GitOps Controller)"}}:::gitops
+    end
+
+    %% GKE Cluster Section
+    subgraph GKE_Cluster ["☁️ Google Cloud — GKE Cluster (worktrack-cluster)"]
         direction TB
-        subgraph NS ["📦 Namespace: worktrack"]
-            LB(["🌐 LoadBalancer\nExternal IP: 35.253.124.176"])
-            FE(["⚛️ Frontend\nReact + Nginx\n:80"])
-            BE(["🟢 Backend\nNode.js API\n:5000  ×2 pods HPA→5"])
-            PG(["🐘 PostgreSQL 15\nPrimary DB\n:5432 + PVC"])
-            RD(["⚡ Redis 7\nCache Layer\n:6379"])
+        subgraph Namespace ["📦 Namespace: worktrack"]
+            direction LR
+            LB["🌐 LoadBalancer Service<br>IP: 35.253.124.176"]:::lb
+            FE["⚛️ React Frontend Pods<br>(Nginx Service :80)"]:::react
+            BE["🟢 Node.js Backend Pods<br>(Express API :5000)"]:::node
+            PG[(🐘 PostgreSQL 15 DB<br>+ Persistent PVC)]:::db
+            RD[(⚡ Redis 7 Pod<br>Cache Layer)]:::cache
         end
     end
 
-    BROWSER(["🌍 Browser\nEnd User"])
+    %% End User
+    Browser(["🌍 End-User Browser"]):::user
 
-    DEV -->|"git push"| GH
-    GH -->|"trigger CI"| GA
-    GA -->|"docker build & push"| DH
-    GH -->|"watches k8s/ folder"| ARGO
-    ARGO -->|"auto sync & deploy"| NS
-    DH -->|"pull image"| BE
-    DH -->|"pull image"| FE
+    %% CI/CD Flow Relations
+    Dev -->|"1. git push"| GitHub
+    GitHub -->|"2. Triggers Workflow"| GHA
+    GHA -->|"3. docker build & push"| DockerHub
+    GitHub -.->|"4. Watches Manifests"| ArgoCD
+    ArgoCD -.->|"5. Auto-Syncs State"| Namespace
+    DockerHub -.->|"Pulls Image"| FE
+    DockerHub -.->|"Pulls Image"| BE
 
-    BROWSER -->|"HTTP Request"| LB
-    LB --> FE
-    FE -->|"REST API calls"| BE
-    BE -->|"read/write data"| PG
-    BE -->|"cache responses"| RD
+    %% Application Traffic Flow
+    Browser ===>|"HTTP/S Traffic"| LB
+    LB ====> FE
+    FE ====>|"REST API Calls"| BE
+    BE ====>|"SQL Queries"| PG
+    BE ====>|"Reads/Writes"| RD
 
-    style GKE fill:#1a1a2e,stroke:#4285F4,stroke-width:2px,color:#fff
-    style NS fill:#16213e,stroke:#326CE5,stroke-width:2px,color:#fff
-    style DEV fill:#2d6a4f,stroke:#52b788,color:#fff
-    style GH fill:#333,stroke:#888,color:#fff
-    style GA fill:#1f6feb,stroke:#58a6ff,color:#fff
-    style DH fill:#0a3069,stroke:#2496ED,color:#fff
-    style ARGO fill:#7c3d00,stroke:#EF7B4D,color:#fff
-    style LB fill:#1565C0,stroke:#42A5F5,color:#fff
-    style FE fill:#0d47a1,stroke:#64B5F6,color:#fff
-    style BE fill:#1b5e20,stroke:#66BB6A,color:#fff
-    style PG fill:#1a237e,stroke:#7986CB,color:#fff
-    style RD fill:#b71c1c,stroke:#EF9A9A,color:#fff
-    style BROWSER fill:#4a148c,stroke:#CE93D8,color:#fff
+    %% Group Styling
+    style Pipeline fill:#0f172a,stroke:#475569,stroke-width:2px,color:#e2e8f0
+    style GKE_Cluster fill:#090d16,stroke:#4285F4,stroke-width:3px,color:#fff
+    style Namespace fill:#0f172a,stroke:#326CE5,stroke-width:2px,color:#fff
 ```
 
 ---
