@@ -80,6 +80,13 @@ This project demonstrates a complete **end-to-end DevOps workflow**:
 
 ---
 
+### 🕸️ ArgoCD — Application Network Graph (Live Resource View)
+> ArgoCD showing real-time network topology of all pods and services deployed in the cluster — **Sync OK ✅**
+
+![ArgoCD Network Graph](./new%20pics/Screenshot%202026-05-28%20111311.png)
+
+---
+
 ### ☁️ GKE Console — worktrack-cluster Running
 > Cluster details on Google Cloud Console — **Status: Running**, 2 Nodes, Zone: us-central1-a
 
@@ -343,12 +350,11 @@ Imagine a software company **TechCorp** using WorkTrack Pro to manage their engi
 
 ---
 
-## 👥 Team
+## 👤 Developer
 
 | Name | Role |
 |------|------|
-| Uday Patil | DevOps Engineer |
-| Kiran Sonawane | DevOps Engineer |
+| **Uday Patil** | DevOps Engineer |
 
 ---
 
