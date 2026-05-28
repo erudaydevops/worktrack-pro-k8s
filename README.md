@@ -29,37 +29,54 @@ This project demonstrates a complete **end-to-end DevOps workflow**:
 
 ## 🏗️ Architecture Overview
 
-```
-  Developer
-      │
-      │  git push
-      ▼
- ┌─────────────┐       GitHub Actions CI        ┌─────────────────┐
- │   GitHub    │ ──────────────────────────────► │   Docker Hub    │
- │  Repository │                                 │  (Images Store) │
- └──────┬──────┘                                 └─────────────────┘
-        │
-        │  ArgoCD watches k8s/ folder (GitOps)
-        ▼
- ┌──────────────────────────────────────────────────────────┐
- │              Google Kubernetes Engine (GKE)              │
- │                  Cluster: worktrack-cluster              │
- │                  Zone: us-central1-a  | Nodes: 2         │
- │                                                          │
- │  Namespace: worktrack                                    │
- │                                                          │
- │  [LoadBalancer]                                          │
- │      │                                                   │
- │      ▼                                                   │
- │  [Frontend - React/Nginx]  ←── Port 80                  │
- │      │                                                   │
- │      ▼                                                   │
- │  [Backend - Node.js API]   ×2 replicas (HPA: up to 5)   │
- │      │              │                                    │
- │      ▼              ▼                                    │
- │  [PostgreSQL 15]  [Redis 7]                              │
- │   + PVC Storage   (Cache Layer)                          │
- └──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    DEV(["👨‍💻 Developer\n(Local Machine)"])
+    GH(["🐙 GitHub\nRepository"])
+    GA(["⚙️ GitHub Actions\nCI Pipeline"])
+    DH(["🐳 Docker Hub\nuday188/worktrack-*"])
+    ARGO(["🔄 ArgoCD\nGitOps Controller"])
+
+    subgraph GKE ["☁️ Google Kubernetes Engine — worktrack-cluster (us-central1-a)"]
+        direction TB
+        subgraph NS ["📦 Namespace: worktrack"]
+            LB(["🌐 LoadBalancer\nExternal IP: 35.253.124.176"])
+            FE(["⚛️ Frontend\nReact + Nginx\n:80"])
+            BE(["🟢 Backend\nNode.js API\n:5000  ×2 pods HPA→5"])
+            PG(["🐘 PostgreSQL 15\nPrimary DB\n:5432 + PVC"])
+            RD(["⚡ Redis 7\nCache Layer\n:6379"])
+        end
+    end
+
+    BROWSER(["🌍 Browser\nEnd User"])
+
+    DEV -->|"git push"| GH
+    GH -->|"trigger CI"| GA
+    GA -->|"docker build & push"| DH
+    GH -->|"watches k8s/ folder"| ARGO
+    ARGO -->|"auto sync & deploy"| NS
+    DH -->|"pull image"| BE
+    DH -->|"pull image"| FE
+
+    BROWSER -->|"HTTP Request"| LB
+    LB --> FE
+    FE -->|"REST API calls"| BE
+    BE -->|"read/write data"| PG
+    BE -->|"cache responses"| RD
+
+    style GKE fill:#1a1a2e,stroke:#4285F4,stroke-width:2px,color:#fff
+    style NS fill:#16213e,stroke:#326CE5,stroke-width:2px,color:#fff
+    style DEV fill:#2d6a4f,stroke:#52b788,color:#fff
+    style GH fill:#333,stroke:#888,color:#fff
+    style GA fill:#1f6feb,stroke:#58a6ff,color:#fff
+    style DH fill:#0a3069,stroke:#2496ED,color:#fff
+    style ARGO fill:#7c3d00,stroke:#EF7B4D,color:#fff
+    style LB fill:#1565C0,stroke:#42A5F5,color:#fff
+    style FE fill:#0d47a1,stroke:#64B5F6,color:#fff
+    style BE fill:#1b5e20,stroke:#66BB6A,color:#fff
+    style PG fill:#1a237e,stroke:#7986CB,color:#fff
+    style RD fill:#b71c1c,stroke:#EF9A9A,color:#fff
+    style BROWSER fill:#4a148c,stroke:#CE93D8,color:#fff
 ```
 
 ---
