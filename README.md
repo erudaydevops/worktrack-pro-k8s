@@ -1,107 +1,178 @@
-# WorkTrack Pro — Employee Task Management System on Kubernetes
+# 🚀 WorkTrack Pro — Employee Task Management on Kubernetes
 
-> A production-grade microservices application deployed on Kubernetes demonstrating real-world DevOps practices.
+> A **production-grade microservices application** deployed on **Google Kubernetes Engine (GKE)** with full **GitOps CI/CD** powered by **GitHub Actions** and **ArgoCD**.
 
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
----
-
-## What is WorkTrack Pro?
-
-**WorkTrack Pro** is a modern, responsive Employee Task Management Dashboard designed for enterprise teams to track productivity, task progress, and workload distribution in real-time. It provides a visual dashboard for managers to monitor team bandwidth, assign/edit tasks, and analyze task completion rates across the organization.
-
-### 🏢 Real-World Business Scenario
-
-Imagine a software engineering company, **TechCorp**, with a fast-growing team of developers and multiple active projects:
-
-1. **Identifying Overload:** An Engineering Manager logs into **WorkTrack Pro** and reviews the **Employees** tab. They see that *Alice* is assigned 8 tasks (with a 25% completion rate), while *Bob* has only 1 task assigned.
-2. **Rebalancing the Workload:** The Manager switches to the **Tasks** tab, filters tasks by *Alice*, finds a high-priority "Database Schema Migration" task, and edits it to reassign it to *Bob* with an updated due date.
-3. **Real-Time Data Persistence:** The React frontend securely sends this change to the Node.js API backend. The backend updates PostgreSQL, invalidates the old cached statistics in Redis, and immediately broadcasts the updated data.
-4. **Instantly Updated Metrics:** The Manager returns to the **Dashboard** and sees the overall completion rate and employee workload metrics recalculate instantly, ensuring data consistency across the team.
+<p align="center">
+  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white"/>
+  <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=for-the-badge&logo=argo&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"/>
+</p>
 
 ---
 
-## 📸 Project Screenshots
+## 📌 What is WorkTrack Pro?
+
+**WorkTrack Pro** is a modern, full-stack Employee Task Management Dashboard designed for engineering teams. It enables managers to track productivity, assign tasks, monitor workload distribution, and analyze completion rates — all in real-time.
+
+This project demonstrates a complete **end-to-end DevOps workflow**:
+- Code is written locally → Pushed to **GitHub**
+- **GitHub Actions** automatically builds & pushes Docker images to **Docker Hub**
+- **ArgoCD** watches the repo and automatically deploys changes to **GKE**
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+  Developer
+      │
+      │  git push
+      ▼
+ ┌─────────────┐       GitHub Actions CI        ┌─────────────────┐
+ │   GitHub    │ ──────────────────────────────► │   Docker Hub    │
+ │  Repository │                                 │  (Images Store) │
+ └──────┬──────┘                                 └─────────────────┘
+        │
+        │  ArgoCD watches k8s/ folder (GitOps)
+        ▼
+ ┌──────────────────────────────────────────────────────────┐
+ │              Google Kubernetes Engine (GKE)              │
+ │                  Cluster: worktrack-cluster              │
+ │                  Zone: us-central1-a  | Nodes: 2         │
+ │                                                          │
+ │  Namespace: worktrack                                    │
+ │                                                          │
+ │  [LoadBalancer]                                          │
+ │      │                                                   │
+ │      ▼                                                   │
+ │  [Frontend - React/Nginx]  ←── Port 80                  │
+ │      │                                                   │
+ │      ▼                                                   │
+ │  [Backend - Node.js API]   ×2 replicas (HPA: up to 5)   │
+ │      │              │                                    │
+ │      ▼              ▼                                    │
+ │  [PostgreSQL 15]  [Redis 7]                              │
+ │   + PVC Storage   (Cache Layer)                          │
+ └──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📸 Live Screenshots
+
+### 🌐 WorkTrack Pro — Live on GKE (Employees Page)
+> App live at `http://35.253.124.176` with Kiran Sonawane added via GitOps workflow
+
+![WorkTrack Pro Live - Employees](./new%20pics/Screenshot%202026-05-28%20110314.png)
+
+---
+
+### 🔄 ArgoCD — GitOps CD Dashboard (Synced ✅)
+> ArgoCD v3.4.2 watching `erudaydevops/worktrack-pro-k8s` repo — Status: **Synced**
+
+![ArgoCD Dashboard](./new%20pics/Screenshot%202026-05-28%20110324.png)
+
+---
+
+### ☁️ GKE Console — worktrack-cluster Running
+> Cluster details on Google Cloud Console — **Status: Running**, 2 Nodes, Zone: us-central1-a
+
+![GKE Cluster Console](./new%20pics/Screenshot%202026-05-28%20110346.png)
+
+---
+
+### ⌨️ Cloud Shell — kubectl Pods & Services Live
+> Real kubectl output showing all pods Running and LoadBalancer External IP assigned
+
+![kubectl Cloud Shell](./new%20pics/Screenshot%202026-05-28%20110410.png)
+
+---
 
 ### 📊 Application Dashboard
 ![WorkTrack Pro Dashboard](./screenshot-dashboard-v3.png)
 
-### 👥 Team Management & Bandwidth Overview
-![WorkTrack Pro Employees](./screenshot-employees.png)
-
 ### ✅ Task CRUD Board & Status Filters
 ![WorkTrack Pro Tasks](./screenshot-tasks.png)
 
-### ☸️ Kubernetes Cluster Resources & Deployments (CLI)
-![Kubernetes CLI status](./screenshot-k8s-cli-v3.png)
+### ☸️ Kubernetes Cluster Resources (CLI)
+![Kubernetes CLI](./screenshot-k8s-cli-v3.png)
 
 ---
 
-## Architecture
+## 🔄 CI/CD Pipeline — How It Works
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │         Kubernetes Cluster           │
-                    │          (Namespace: worktrack)      │
-                    │                                      │
-  Browser ──────►  │  [Frontend - React/Nginx]            │
-  port 30080        │       │                              │
-                    │       ▼                              │
-                    │  [Backend - Node.js API] ×2 replicas│
-                    │       │              │               │
-                    │       ▼              ▼               │
-                    │  [PostgreSQL]    [Redis Cache]       │
-                    │   + PVC Storage                      │
-                    └─────────────────────────────────────┘
+ ┌────────────────────────────────────────────────────────────┐
+ │                   CI/CD Pipeline Flow                      │
+ │                                                            │
+ │  1. git push → master branch                               │
+ │         │                                                  │
+ │         ▼                                                  │
+ │  2. GitHub Actions triggers (.github/workflows/ci.yml)     │
+ │         │                                                  │
+ │         ├──► Build Backend Docker Image                    │
+ │         │         └──► Push → uday188/worktrack-backend    │
+ │         │                                                  │
+ │         └──► Build Frontend Docker Image                   │
+ │                   └──► Push → uday188/worktrack-frontend   │
+ │                                                            │
+ │  3. ArgoCD polls GitHub repo every 3 minutes               │
+ │         │                                                  │
+ │         ▼                                                  │
+ │  4. Detects changes in k8s/ folder                         │
+ │         │                                                  │
+ │         ▼                                                  │
+ │  5. Auto-syncs → Deploys to GKE cluster ✅                 │
+ └────────────────────────────────────────────────────────────┘
 ```
 
-## Services
+---
+
+## 🧩 Services & Tech Stack
 
 | Service | Technology | Role | K8s Service Type |
 |---------|-----------|------|-----------------|
-| **frontend** | React + Vite + Nginx | Dashboard UI | NodePort (30080) |
+| **frontend** | React 18 + Vite + Nginx | Dashboard UI | LoadBalancer |
 | **backend** | Node.js + Express | REST API | ClusterIP |
-| **postgres** | PostgreSQL 15 | Primary Database | ClusterIP |
-| **redis** | Redis 7 | API Cache | ClusterIP |
-
-## Features
-
-- 📊 **Dashboard** — Real-time task statistics with progress tracking
-- ✅ **Task Management** — Full CRUD with status, priority, and assignee filtering
-- 👥 **Employee View** — Team overview with per-person task completion stats
-- ⚡ **Redis Caching** — API responses cached for performance
-- 🔄 **Auto-scaling** — HPA scales backend 2→5 pods based on CPU load
+| **postgres** | PostgreSQL 15 Alpine | Primary Database | ClusterIP |
+| **redis** | Redis 7 Alpine | API Cache Layer | ClusterIP |
 
 ---
 
-## Kubernetes Concepts Demonstrated
+## ☸️ Kubernetes Concepts Demonstrated
 
 | Concept | File | Purpose |
 |---------|------|---------|
-| **Namespace** | `namespace.yaml` | Isolate all app resources |
-| **Deployment** | `*-deployment.yaml` | Manage pod lifecycle & replicas |
-| **ConfigMap** | `configmap.yaml` | Non-sensitive configuration |
-| **Secret** | `secret.yaml` | Encrypted DB credentials |
-| **PersistentVolumeClaim** | `postgres-pvc.yaml` | Persistent DB storage |
-| **ClusterIP Service** | `services.yaml` | Internal pod communication |
-| **NodePort Service** | `services.yaml` | External browser access |
-| **HPA** | `hpa.yaml` | Horizontal auto-scaling |
+| **Namespace** | `namespace.yaml` | Isolate all app resources in `worktrack` ns |
+| **Deployment** | `*-deployment.yaml` | Manage pod lifecycle & rolling updates |
+| **ConfigMap** | `configmap.yaml` | Non-sensitive environment configuration |
+| **Secret** | `secret.yaml` | Encrypted DB credentials (base64) |
+| **PersistentVolumeClaim** | `postgres-pvc.yaml` | Persistent DB storage (survives pod restart) |
+| **ClusterIP Service** | `services.yaml` | Internal pod-to-pod communication |
+| **LoadBalancer Service** | `services.yaml` | Public internet access via GCP IP |
+| **HPA** | `hpa.yaml` | Auto-scale backend: 2 → 5 pods on CPU load |
 | **Liveness Probe** | `backend-deployment.yaml` | Auto-restart unhealthy pods |
-| **Readiness Probe** | `backend-deployment.yaml` | Traffic routing control |
-| **Resource Limits** | All deployments | CPU & Memory constraints |
+| **Readiness Probe** | `backend-deployment.yaml` | Only route traffic to ready pods |
+| **Resource Limits** | All deployments | CPU & Memory constraints per pod |
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
-worktrack-pro/
-├── frontend/               # React + Vite application
+worktrack-pro-k8s/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions — Build & Push Docker images
+│
+├── frontend/                   # React + Vite application
 │   ├── src/
 │   │   ├── App.jsx
 │   │   ├── index.css
@@ -112,98 +183,123 @@ worktrack-pro/
 │   ├── Dockerfile
 │   └── nginx.conf
 │
-├── backend/                # Node.js REST API
+├── backend/                    # Node.js REST API
 │   ├── src/
 │   │   ├── index.js
-│   │   ├── db.js
+│   │   ├── db.js               # DB init & seed data
 │   │   └── routes/
 │   │       ├── tasks.js
 │   │       └── employees.js
 │   └── Dockerfile
 │
-└── k8s/                    # Kubernetes manifests
-    ├── namespace.yaml
-    ├── configmap.yaml
-    ├── secret.yaml
-    ├── postgres-pvc.yaml
-    ├── postgres-deployment.yaml
-    ├── redis-deployment.yaml
-    ├── backend-deployment.yaml
-    ├── frontend-deployment.yaml
-    ├── services.yaml
-    └── hpa.yaml
+├── k8s/                        # Kubernetes Manifests (watched by ArgoCD)
+│   ├── namespace.yaml
+│   ├── configmap.yaml
+│   ├── secret.yaml
+│   ├── postgres-pvc.yaml
+│   ├── postgres-deployment.yaml
+│   ├── redis-deployment.yaml
+│   ├── backend-deployment.yaml
+│   ├── frontend-deployment.yaml
+│   ├── services.yaml
+│   └── hpa.yaml
+│
+└── argocd/
+    └── application.yaml        # ArgoCD Application manifest
 ```
 
 ---
 
-## How to Deploy
+## 🚀 How to Deploy (GKE + ArgoCD)
 
 ### Prerequisites
-- Google Cloud Platform (GCP) account with GKE enabled
+- Google Cloud Platform account (GKE API enabled)
 - `gcloud` CLI installed and authenticated
-- `kubectl` configured
+- `kubectl` installed
+- Docker Hub account
+- GitHub repository with Secrets configured
 
-### Step 1 — Create GKE Cluster
+### Step 1 — Add GitHub Secrets
+Go to your GitHub repo → **Settings → Secrets → Actions** and add:
+
+| Secret Name | Value |
+|-------------|-------|
+| `DOCKER_USERNAME` | Your Docker Hub username |
+| `DOCKER_PASSWORD` | Your Docker Hub password/token |
+
+### Step 2 — Create GKE Cluster
 
 ```bash
+# Login to GCP
 gcloud auth login
 gcloud config set project <YOUR-PROJECT-ID>
-gcloud container clusters create worktrack-cluster --zone us-central1-a --machine-type e2-medium --num-nodes 2
+
+# Create the cluster (e2-medium, 2 nodes, us-central1-a)
+gcloud container clusters create worktrack-cluster \
+  --zone us-central1-a \
+  --machine-type e2-medium \
+  --num-nodes 2
+
+# Get cluster credentials for kubectl
+gcloud container clusters get-credentials worktrack-cluster --zone us-central1-a
 ```
 
-### Step 2 — Deploy to Kubernetes
+### Step 3 — Deploy App to Kubernetes
 
 ```bash
-# Apply all manifests
+# Apply all Kubernetes manifests
 kubectl apply -f k8s/
 
-# Check everything is running
-kubectl get all -n worktrack
-```
+# Verify all pods are running
+kubectl get pods -n worktrack
 
-### Step 3 — Access the App
-
-Since the frontend service is exposed via **LoadBalancer** on GCP, it will automatically get a Public IP:
-
-```bash
+# Get the public IP of the app
 kubectl get svc frontend-service -n worktrack
 ```
-Wait for the `EXTERNAL-IP` to be assigned, then open it in your browser:
-👉 **http://<EXTERNAL-IP>**
+
+Open browser → `http://<EXTERNAL-IP>`
+
+### Step 4 — Install ArgoCD on Cluster
+
+```bash
+# Create ArgoCD namespace and install
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Wait for pods to be ready
+kubectl get pods -n argocd
+
+# Expose ArgoCD with a LoadBalancer
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+# Get ArgoCD public IP
+kubectl get svc argocd-server -n argocd
+```
+
+### Step 5 — Deploy ArgoCD Application
+
+```bash
+# Apply the ArgoCD Application manifest
+kubectl apply -f argocd/application.yaml
+```
+
+### Step 6 — Access ArgoCD Dashboard
+
+```bash
+# Get the initial admin password
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+Open browser → `https://<ARGOCD-EXTERNAL-IP>`
+- **Username:** `admin`
+- **Password:** (from command above)
+
+> From this point, every `git push` to the repo will automatically trigger GitHub Actions (build & push Docker images) and ArgoCD will auto-sync the cluster! 🎉
 
 ---
 
-## 🔄 GitOps Continuous Delivery with ArgoCD
-
-This project is fully ready for **GitOps CD** using **ArgoCD**. 
-
-An ArgoCD Application manifest is provided in [argocd/application.yaml](./argocd/application.yaml). It connects the cluster directly to this GitHub repository. Any changes pushed to the `k8s/` folder in Git will be automatically reconciled and deployed to your cluster, ensuring zero configuration drift.
-
-### Setup Steps:
-
-1. **Install ArgoCD on your cluster:**
-   ```bash
-   kubectl create namespace argocd
-   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-   ```
-
-2. **Apply the ArgoCD Application:**
-   ```bash
-   kubectl apply -f argocd/application.yaml
-   ```
-
-3. **Access ArgoCD Dashboard:**
-   ```bash
-   kubectl port-forward -n argocd svc/argocd-server 8080:443
-   ```
-   * Open **[https://localhost:8080](https://localhost:8080)** in your browser.
-   * **Username:** `admin`
-   * **Password command:** 
-     `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"` (decode base64 to read).
-
----
-
-## API Endpoints
+## 🌐 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -217,13 +313,43 @@ An ArgoCD Application manifest is provided in [argocd/application.yaml](./argocd
 
 ---
 
-## Tech Stack
+## 🏢 Real-World Business Scenario
 
-- **Frontend**: React 18, Vite, CSS3 (Dark Theme)
-- **Backend**: Node.js, Express, pg (PostgreSQL client), Redis client
-- **Database**: PostgreSQL 15
-- **Cache**: Redis 7
-- **Container**: Docker, Nginx
-- **Orchestration**: Google Kubernetes Engine (GKE)
-- **Registry**: Docker Hub (`uday188/worktrack-*`)
-- **CI/CD**: GitHub Actions & ArgoCD
+Imagine a software company **TechCorp** using WorkTrack Pro to manage their engineering team:
+
+1. **Manager logs in** and sees the **Employees** tab showing all team members with task stats
+2. **Identifies overload** — one engineer has 8 tasks, another has none
+3. **Rebalances** — switches to Tasks tab, reassigns a task to another engineer
+4. **Real-time update** — React frontend calls Node.js API → PostgreSQL updates → Redis cache invalidates → Dashboard shows new stats instantly
+5. **GitOps in action** — When a new employee (e.g., *Kiran Sonawane*) is added to the codebase, GitHub Actions builds new image → ArgoCD deploys to GKE automatically
+
+---
+
+## 🛠️ Full Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, Vite, CSS3 (Dark Theme) |
+| **Backend** | Node.js, Express.js |
+| **Database** | PostgreSQL 15 Alpine |
+| **Cache** | Redis 7 Alpine |
+| **Containerization** | Docker, Nginx |
+| **Orchestration** | Google Kubernetes Engine (GKE) |
+| **Container Registry** | Docker Hub (`uday188/worktrack-*`) |
+| **CI Pipeline** | GitHub Actions |
+| **CD Pipeline** | ArgoCD v3.4.2 (GitOps) |
+| **Cloud Provider** | Google Cloud Platform (GCP) |
+| **Cluster Zone** | us-central1-a |
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|------|------|
+| Uday Patil | DevOps Engineer |
+| Kiran Sonawane | DevOps Engineer |
+
+---
+
+<p align="center">Made with ❤️ | Deployed on Google Kubernetes Engine | Managed by ArgoCD</p>
