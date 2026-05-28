@@ -41,6 +41,7 @@ async function initDB() {
         ('Rahul Sharma',  'rahul@worktrack.io',  'Backend Developer',   '👨‍💻'),
         ('Priya Patel',   'priya@worktrack.io',  'Frontend Developer',  '👩‍💻'),
         ('Uday Patil',     'uday@worktrack.io',   'DevOps Engineer',     '🧑‍🔧'),
+        ('Kiran Sonawane', 'kiran@worktrack.io',  'DevOps Engineer',     '🧑‍🔧'),
         ('Sneha Reddy',   'sneha@worktrack.io',  'UI/UX Designer',      '👩‍🎨'),
         ('Vikram Singh',  'vikram@worktrack.io', 'Product Manager',     '👨‍💼');
     `);
