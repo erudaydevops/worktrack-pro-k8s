@@ -139,14 +139,16 @@ worktrack-pro/
 ## How to Deploy
 
 ### Prerequisites
-- Docker Desktop with Kubernetes enabled
+- Google Cloud Platform (GCP) account with GKE enabled
+- `gcloud` CLI installed and authenticated
 - `kubectl` configured
 
-### Step 1 — Build Docker Images
+### Step 1 — Create GKE Cluster
 
 ```bash
-docker build -t worktrack-backend:latest  ./backend
-docker build -t worktrack-frontend:latest ./frontend
+gcloud auth login
+gcloud config set project <YOUR-PROJECT-ID>
+gcloud container clusters create worktrack-cluster --zone us-central1-a --machine-type e2-medium --num-nodes 2
 ```
 
 ### Step 2 — Deploy to Kubernetes
@@ -161,18 +163,13 @@ kubectl get all -n worktrack
 
 ### Step 3 — Access the App
 
-You can access the application in two ways:
+Since the frontend service is exposed via **LoadBalancer** on GCP, it will automatically get a Public IP:
 
-#### Option A: Direct NodePort Access (No setup needed)
-Since the frontend service is exposed via NodePort `30080`, you can open it directly:
-👉 **[http://localhost:30080](http://localhost:30080)**
-
-#### Option B: Using Launcher Script (Port 3000)
-Run the automated launcher script to set up port forwards and open the app on port 3000:
-```powershell
-.\start.ps1
+```bash
+kubectl get svc frontend-service -n worktrack
 ```
-Open → **[http://localhost:3000](http://localhost:3000)**
+Wait for the `EXTERNAL-IP` to be assigned, then open it in your browser:
+👉 **http://<EXTERNAL-IP>**
 
 ---
 
@@ -227,5 +224,6 @@ An ArgoCD Application manifest is provided in [argocd/application.yaml](./argocd
 - **Database**: PostgreSQL 15
 - **Cache**: Redis 7
 - **Container**: Docker, Nginx
-- **Orchestration**: Kubernetes
-- **Registry**: Local Docker (imagePullPolicy: Never)
+- **Orchestration**: Google Kubernetes Engine (GKE)
+- **Registry**: Docker Hub (`uday188/worktrack-*`)
+- **CI/CD**: GitHub Actions & ArgoCD
